@@ -4,7 +4,7 @@
 
 Both servers should be running:
 - **Backend**: http://localhost:5000 ✓
-- **Frontend**: http://localhost:3000 ✓
+- **Frontend**: http://localhost:5173 ✓ (Vite dev server)
 
 ## 🔍 Step-by-Step Debugging
 
@@ -33,7 +33,7 @@ curl -X POST http://localhost:5000/api/plan-route \
 **Expected**: Should return 3 routes with DTC route numbers
 
 ### Step 3: Open Frontend
-1. Go to: http://localhost:3000
+1. Go to: http://localhost:5173
 2. You should see "SmartTransit AI" header
 3. Left side: Route planner form
 4. Right side: "Your Journey Awaits" message

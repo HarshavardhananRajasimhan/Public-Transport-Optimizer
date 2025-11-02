@@ -1,18 +1,42 @@
-# SmartTransit AI - Delhi Bus Tracker
+# SmartTransit AI - Delhi Public Transport Optimizer
 
-An AI-powered transit route planner for Delhi that provides optimized routes using real-time bus data and Gemini AI.
+A real-time transit route planner for Delhi that provides optimized routes using live bus tracking data from Delhi Open Transit Data.
 
-## Features
+## 🚀 Features
 
-- 🤖 AI-powered route optimization using Google Gemini
-- 🚌 Real-time bus tracking from Delhi Transit API
-- 🗺️ Interactive map with route visualization
-- ⚡ Multiple route options (fastest, cheapest, most comfortable)
-- 📍 Live vehicle positions updated every 15 seconds
+- 🚌 **Real-time Bus Tracking** - Track 2,600+ DTC buses with live GPS positions
+- 🗺️ **Smart Route Planning** - Find actual bus routes between any two points
+- 📊 **Multiple Options** - Compare routes by speed, cost, and comfort
+- ✅ **Direction Validation** - Only suggests buses going the right way
+- 📍 **Live Updates** - Bus positions updated every minute
+- 🎯 **Confidence Scores** - Know how reliable each route suggestion is
 
-## Quick Start
+## 📊 Current Status
 
-### Option 1: Using the startup scripts (Recommended)
+### What's Working ✅
+- Real-time tracking of 2,600+ DTC buses
+- Actual route numbers (207, 531, 588, etc.)
+- Direction-aware route planning
+- Variable confidence scores (60-95%)
+- Walking distance calculations
+- Cost and time estimates
+
+### Known Limitations ⚠️
+- **Bus routes only** - Metro integration pending
+- **No GTFS static data** - Must be downloaded separately (see DATA_SETUP.md)
+- **Position-based routing** - Works best during peak hours
+- **No multi-modal routes** - Can't combine bus + metro yet
+
+See [ROUTE_PLANNER_STATUS.md](ROUTE_PLANNER_STATUS.md) for detailed information.
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.8+
+- Node.js 16+
+- npm or yarn
+
+### Option 1: Using Startup Scripts (Recommended)
 
 **Terminal 1 - Start Backend:**
 ```bash
@@ -24,15 +48,15 @@ An AI-powered transit route planner for Delhi that provides optimized routes usi
 ./start-frontend.sh
 ```
 
-### Option 2: Manual setup
+### Option 2: Manual Setup
 
 **Backend:**
 ```bash
 cd backend
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python server.py
+python route_planning_server.py
 ```
 
 **Frontend:**
@@ -42,106 +66,146 @@ npm install
 npm run dev
 ```
 
-## How It Works
+The app will be available at `http://localhost:5173`
 
-1. **Frontend** (React + TypeScript + Vite)
-   - User enters start and end locations
-   - Gemini AI generates optimized route options
-   - Map displays routes with live bus positions
-
-2. **Backend** (Python + Flask)
-   - Fetches real-time bus data from Delhi Transit API
-   - Parses GTFS Realtime Protocol Buffer format
-   - Serves data to frontend via REST API
-
-3. **Integration**
-   - Frontend polls backend every 15 seconds
-   - Live buses appear as markers on the map
-   - Toggle live tracking on/off as needed
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 delhi-bus-tracker/
 ├── backend/
-│   ├── server.py              # Real Delhi Transit API backend
-│   ├── bus_realtime_server.py # Mock data backend (for testing)
-│   └── requirements.txt       # Python dependencies
-├── smarttransit-ai/
-│   ├── components/            # React components
-│   ├── services/              # API services
-│   │   ├── geminiService.ts   # AI route optimization
-│   │   └── transitApiService.ts # Live vehicle data
-│   ├── hooks/                 # Custom React hooks
-│   └── types.ts               # TypeScript types
-├── start-backend.sh           # Backend startup script
-├── start-frontend.sh          # Frontend startup script
-└── README.md                  # This file
+│   ├── route_planning_server.py    # Main Flask server
+│   ├── route_planner/
+│   │   ├── simple_planner.py       # Route planning logic
+│   │   └── gtfs_route_mapper.py    # GTFS data mapping
+│   └── requirements.txt
+├── smarttransit-ai/                # React frontend
+│   ├── src/
+│   │   ├── components/             # UI components
+│   │   ├── services/               # API services
+│   │   └── types/                  # TypeScript types
+│   └── package.json
+├── GTFS/                           # Bus GTFS data (not in git)
+├── DMRC_GTFS/                      # Metro GTFS data (not in git)
+└── DATA_SETUP.md                   # Instructions to download data
 ```
 
-## Configuration
+## 🔧 API Endpoints
 
-### Backend URL
-The frontend connects to the backend via the `VITE_BACKEND_URL` environment variable in `smarttransit-ai/.env`:
+### Backend Server (Port 5000)
 
-```env
-VITE_BACKEND_URL=http://localhost:5000
-```
+- `GET /api/health` - Health check and system status
+- `GET /api/live` - Get all live bus positions
+- `POST /api/plan-route` - Plan a route between two points
+- `GET /api/nearby-buses` - Find buses near a location
+- `GET /api/routes` - Get list of active routes
 
-### Gemini API Key
-Add your Gemini API key to `smarttransit-ai/.env`:
+### Example: Plan a Route
 
-```env
-API_KEY=your_gemini_api_key_here
-```
-
-## Using Mock Data
-
-For testing without the real Delhi Transit API, use the mock backend:
-
-1. Run the mock server:
 ```bash
-cd backend
-python bus_realtime_server.py
+curl -X POST http://localhost:5000/api/plan-route \
+  -H "Content-Type: application/json" \
+  -d '{
+    "start": {"lat": 28.6500, "lon": 77.2167, "name": "Kashmere Gate"},
+    "end": {"lat": 28.6289, "lon": 77.2065, "name": "Chandni Chowk"},
+    "preference": "fastest"
+  }'
 ```
 
-2. Update `smarttransit-ai/.env`:
-```env
-VITE_BACKEND_URL=http://localhost:5001
+## 📊 Data Sources
+
+- **Real-time Bus Data**: [Delhi Open Transit Data](https://otd.delhi.gov.in/)
+- **GTFS Static Data**: Available from Delhi Open Transit Data (must be downloaded separately)
+- **Metro Data**: DMRC GTFS (available but not yet integrated)
+
+### Setting Up GTFS Data
+
+The GTFS data files are not included in this repository due to size constraints. Follow the instructions in [DATA_SETUP.md](DATA_SETUP.md) to download and set up the data.
+
+## 🧪 Testing
+
+### Test Backend Health
+```bash
+curl http://localhost:5000/api/health
 ```
 
-## Troubleshooting
+### Test Route Planning
+```bash
+curl -X POST http://localhost:5000/api/plan-route \
+  -H "Content-Type: application/json" \
+  -d '{
+    "start": {"lat": 28.6129, "lon": 77.2295, "name": "Connaught Place"},
+    "end": {"lat": 28.5517, "lon": 77.1983, "name": "India Gate"}
+  }'
+```
 
-**No live buses appearing:**
-- Check that the backend is running on port 5000
-- Open browser console to see API errors
-- Verify CORS is not blocking requests
+## 📚 Documentation
 
-**Backend errors:**
-- Ensure all Python dependencies are installed
-- Check that the Delhi Transit API is accessible
-- Verify the API key in server.py is valid
+- [ROUTE_PLANNER_STATUS.md](ROUTE_PLANNER_STATUS.md) - Current implementation status and limitations
+- [FIXES_APPLIED.md](FIXES_APPLIED.md) - Recent fixes and improvements
+- [DATA_SETUP.md](DATA_SETUP.md) - How to download and set up GTFS data
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common issues and solutions
+- [PROJECT_WORKING.md](PROJECT_WORKING.md) - What's working and what's not
 
-**Frontend not connecting:**
-- Confirm `VITE_BACKEND_URL` in `.env` is correct
-- Restart the frontend dev server after changing `.env`
-- Check network tab in browser dev tools
+## 🔍 How It Works
 
-## Tech Stack
+1. **User enters start and end locations**
+2. **Backend fetches live bus positions** (2,600+ buses)
+3. **Algorithm finds buses near both points**
+4. **Direction validation** ensures buses go the right way
+5. **Route scoring** based on distance, time, and bearing match
+6. **Returns top 3 routes** with confidence scores
 
-**Frontend:**
-- React 18
-- TypeScript
-- Vite
-- Leaflet (maps)
-- Google Gemini AI
+See [ROUTE_PLANNER_STATUS.md](ROUTE_PLANNER_STATUS.md) for detailed algorithm explanation.
 
-**Backend:**
-- Python 3
-- Flask
-- GTFS Realtime bindings
-- Flask-CORS
+## 🐛 Known Issues
 
-## License
+1. **Metro routes not shown** - Integration pending
+2. **Stop names show coordinates** - Requires GTFS data or reverse geocoding
+3. **Long-distance routes may not be found** - Limited to buses currently running
+4. **No multi-modal routing** - Can't combine bus + metro
 
-MIT
+See [FIXES_APPLIED.md](FIXES_APPLIED.md) for recently fixed issues.
+
+## 🚧 Roadmap
+
+### Short Term
+- [ ] Load GTFS static data for stop names
+- [ ] Add reverse geocoding for area names
+- [ ] Improve route caching
+
+### Medium Term
+- [ ] Integrate Delhi Metro real-time API
+- [ ] Add multi-modal routing (bus + metro)
+- [ ] Implement proper stop matching
+- [ ] Add real-time arrival predictions
+
+### Long Term
+- [ ] Machine learning for route prediction
+- [ ] Historical data analysis
+- [ ] Traffic-aware routing
+- [ ] Crowd-sourced route feedback
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+## 🙏 Acknowledgments
+
+- Delhi Open Transit Data for providing real-time bus tracking API
+- DMRC for metro GTFS data
+- All contributors and testers
+
+## 📞 Support
+
+For issues and questions:
+1. Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+2. Review [ROUTE_PLANNER_STATUS.md](ROUTE_PLANNER_STATUS.md)
+3. Open an issue on GitHub
+
+---
+
+**Note**: This project uses real Delhi Transit data. Route suggestions are based on live bus positions and may vary depending on time of day and bus availability.
