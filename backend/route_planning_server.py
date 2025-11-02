@@ -107,7 +107,14 @@ def plan_route():
             'end_name': end.get('name', 'End Location'),
             'preference': preference,
             'data_source': 'Delhi Open Transit Data (Real-time)',
-            'last_updated': planner.last_update.isoformat() if planner.last_update else None
+            'last_updated': planner.last_update.isoformat() if planner.last_update else None,
+            'note': 'Currently showing DTC bus routes only. Metro integration coming soon.',
+            'limitations': [
+                'Real-time bus positions only (no static schedule data)',
+                'Route IDs are from live GPS tracking',
+                'Metro routes not yet integrated',
+                'Route suggestions based on current bus positions'
+            ]
         }
         
         return jsonify(result)
