@@ -28,10 +28,9 @@ build/
 .DS_Store
 Thumbs.db
 
-# Large GTFS data files (optional - uncomment if you want to exclude)
-# GTFS/
-# DMRC_GTFS/
-# *.zip
+# Large GTFS data files (excluded due to GitHub size limits)
+GTFS/
+DMRC_GTFS/
 
 # Database files
 *.db
