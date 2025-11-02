@@ -106,14 +106,15 @@ def plan_route():
             'start_name': start.get('name', 'Start Location'),
             'end_name': end.get('name', 'End Location'),
             'preference': preference,
-            'data_source': 'Delhi Open Transit Data (Real-time)',
+            'data_source': 'Delhi Open Transit Data (Real-time) + DMRC GTFS',
             'last_updated': planner.last_update.isoformat() if planner.last_update else None,
-            'note': 'Currently showing DTC bus routes only. Metro integration coming soon.',
-            'limitations': [
-                'Real-time bus positions only (no static schedule data)',
-                'Route IDs are from live GPS tracking',
-                'Metro routes not yet integrated',
-                'Route suggestions based on current bus positions'
+            'note': 'Showing both DTC bus routes and Delhi Metro options',
+            'features': [
+                'Real-time bus tracking (2,600+ buses)',
+                'Delhi Metro network integration',
+                'Multi-modal route suggestions',
+                'Direction-validated bus routes',
+                'Confidence scoring'
             ]
         }
         

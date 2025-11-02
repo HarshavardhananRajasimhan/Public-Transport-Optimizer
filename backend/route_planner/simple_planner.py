@@ -8,6 +8,7 @@ from geopy.distance import geodesic
 from datetime import datetime, timedelta
 import math
 from .gtfs_route_mapper import get_route_mapper
+from .metro_planner import get_metro_planner
 
 REALTIME_API = "https://otd.delhi.gov.in/api/realtime/VehiclePositions.pb?key=mt2giIBCJY1tOjhmMIwfTaTwAXTfPpYR"
 
@@ -22,6 +23,7 @@ class SimpleRoutePlanner:
         self.routes = {}
         self.last_update = None
         self.route_mapper = get_route_mapper()
+        self.metro_planner = get_metro_planner()
     
     def update_realtime_data(self):
         """Fetch latest bus positions"""
@@ -199,13 +201,27 @@ class SimpleRoutePlanner:
             )
             routes.append(route)
         
+        # Also try to find metro routes
+        try:
+            metro_routes = self.metro_planner.plan_metro_route(
+                start_lat, start_lon, 
+                end_lat, end_lon
+            )
+            routes.extend(metro_routes)
+        except Exception as e:
+            print(f"Metro planning error: {e}")
+        
         # Sort by preference
         if preference == 'fastest':
             routes.sort(key=lambda x: x['totalDuration'])
         elif preference == 'cheapest':
             routes.sort(key=lambda x: x['totalCost'])
+        elif preference == 'balanced':
+            # Balance between time and cost
+            routes.sort(key=lambda x: x['totalDuration'] * 0.6 + x['totalCost'] * 0.4)
         
-        return {'routes': routes}
+        # Return top 5 routes (mix of bus and metro)
+        return {'routes': routes[:5]}
     
     def _create_bus_route_v2(self, candidate, start_lat, start_lon, end_lat, end_lon, distance, route_num):
         """Create a route object from a candidate (v2 with improved data)"""
