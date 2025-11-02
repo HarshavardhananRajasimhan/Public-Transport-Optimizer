@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartTransit AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/protobufjs@7/dist/protobuf.min.js"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+
+      /* Custom scrollbar for a more polished look */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #e2e8f0; /* slate-200 */
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #6366f1; /* indigo-500 */
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #4f46e5; /* indigo-600 */
+      }
+      .leaflet-container {
+        border-radius: 0.5rem;
+      }
+
+      .main-bg {
+        background-color: #f8fafc; /* slate-50 */
+        background-image:
+          radial-gradient(circle at 100% 0%, #dbeafe 0%, #f8fafc 25%),
+          radial-gradient(circle at 0% 100%, #e0e7ff 0%, #f8fafc 25%);
+      }
+
+      /* Animation for live vehicle icons */
+      @keyframes pulse-live {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        50% {
+          transform: scale(0.95);
+          opacity: 0.6;
+        }
+      }
+      .animate-pulse-live {
+        animation: pulse-live 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "react-dom/": "https://esm.sh/react-dom@18.2.0/",
+    "react/": "https://esm.sh/react@18.2.0/",
+    "react": "https://esm.sh/react@18.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.21.0",
+    "react-leaflet": "https://aistudiocdn.com/react-leaflet@^5.0.0",
+    "leaflet": "https://aistudiocdn.com/leaflet@^1.9.4"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="main-bg antialiased">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

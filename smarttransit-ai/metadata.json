@@ -1,0 +1,5 @@
+{
+  "name": "SmartTransit AI",
+  "description": "An intelligent public transportation app for Delhi that provides AI-powered optimized routes using user preferences and simulated real-time data.",
+  "requestFramePermissions": []
+}
