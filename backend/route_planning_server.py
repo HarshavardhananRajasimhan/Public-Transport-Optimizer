@@ -9,6 +9,7 @@ import requests
 from google.transit import gtfs_realtime_pb2
 import sys
 from pathlib import Path
+from datetime import datetime
 
 # Add route_planner to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -180,6 +181,38 @@ def get_active_routes():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/api/realtime-arrivals", methods=["GET"])
+def get_realtime_arrivals():
+    """
+    Get real-time arrival predictions for buses at a location
+    
+    Query params:
+    - lat: latitude
+    - lon: longitude
+    - route_id: optional - filter by route
+    - limit: number of arrivals (default: 5)
+    """
+    try:
+        lat = float(request.args.get('lat'))
+        lon = float(request.args.get('lon'))
+        route_id = request.args.get('route_id')
+        limit = int(request.args.get('limit', 5))
+        
+        planner = get_planner()
+        arrivals = planner.get_realtime_arrivals(lat, lon, route_id, limit)
+        
+        return jsonify({
+            'arrivals': arrivals,
+            'count': len(arrivals),
+            'location': {'lat': lat, 'lon': lon},
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except ValueError:
+        return jsonify({"error": "Invalid lat/lon parameters"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/api/health", methods=["GET"])
 def health_check():
     """Health check endpoint"""
@@ -191,7 +224,7 @@ def health_check():
         'routes_active': len(planner.routes),
         'last_update': planner.last_update.isoformat() if planner.last_update else None,
         'data_source': 'Delhi Open Transit Data',
-        'mode': 'Real-time (Simple Planner)'
+        'mode': 'Real-time (Simple Planner with Arrival Predictions)'
     })
 
 if __name__ == "__main__":
@@ -199,13 +232,14 @@ if __name__ == "__main__":
     print("🚌 Delhi Transit Route Planning Server")
     print("=" * 60)
     print("\nEndpoints:")
-    print("  GET  /api/live          - Live bus positions")
-    print("  POST /api/plan-route    - Plan a route")
-    print("  GET  /api/nearby-buses  - Find nearby buses")
-    print("  GET  /api/routes        - Active routes")
-    print("  GET  /api/health        - Health check")
-    print("\nMode: Simple Planner (using real-time data only)")
-    print("Note: For full route planning, load GTFS static data")
+    print("  GET  /api/live               - Live bus positions")
+    print("  POST /api/plan-route         - Plan a route")
+    print("  GET  /api/nearby-buses       - Find nearby buses")
+    print("  GET  /api/realtime-arrivals  - Real-time arrival predictions ⭐ NEW!")
+    print("  GET  /api/routes             - Active routes")
+    print("  GET  /api/health             - Health check")
+    print("\nMode: Simple Planner with Arrival Predictions")
+    print("Features: Real-time tracking + ETA predictions + Metro integration")
     print("\nStarting server on http://localhost:5000")
     print("=" * 60)
     print()

@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import math
 from .gtfs_route_mapper import get_route_mapper
 from .metro_planner import get_metro_planner
+from .arrival_predictor import get_arrival_predictor
 
 REALTIME_API = "https://otd.delhi.gov.in/api/realtime/VehiclePositions.pb?key=mt2giIBCJY1tOjhmMIwfTaTwAXTfPpYR"
 
@@ -24,6 +25,7 @@ class SimpleRoutePlanner:
         self.last_update = None
         self.route_mapper = get_route_mapper()
         self.metro_planner = get_metro_planner()
+        self.arrival_predictor = get_arrival_predictor()
     
     def update_realtime_data(self):
         """Fetch latest bus positions"""
@@ -346,6 +348,59 @@ class SimpleRoutePlanner:
         # This is a simplified version - in production, use reverse geocoding
         # For now, just return coordinates
         return f"({lat:.4f}, {lon:.4f})"
+    
+    def get_realtime_arrivals(self, lat, lon, route_id=None, limit=5):
+        """
+        Get real-time arrival predictions for buses near a location
+        
+        Args:
+            lat, lon: User location
+            route_id: Optional - filter by specific route
+            limit: Number of arrivals to return
+        
+        Returns:
+            List of arrival predictions with ETA
+        """
+        # Update data if stale
+        if not self.last_update or (datetime.now() - self.last_update).seconds > 60:
+            self.update_realtime_data()
+        
+        # Find nearby buses
+        nearby_buses = self.find_nearby_buses(lat, lon, radius_km=3.0)
+        
+        # Filter by route if specified
+        if route_id:
+            nearby_buses = [b for b in nearby_buses if b['route_id'] == route_id]
+        
+        # Get arrival predictions
+        arrivals = []
+        for bus in nearby_buses[:limit * 2]:  # Get more to filter
+            prediction = self.arrival_predictor.predict_arrival_time(bus, lat, lon)
+            
+            # Only include buses that are approaching or have reasonable ETA
+            if prediction['status'] in ['approaching', 'unknown'] and prediction['eta_minutes'] < 60:
+                route_info = self.route_mapper.get_route_info(bus['route_id'], mode='bus')
+                
+                arrivals.append({
+                    'route_id': bus['route_id'],
+                    'route_name': route_info.get('name', f"Bus {bus['route_id']}"),
+                    'bus_id': bus['id'],
+                    'eta_minutes': prediction['eta_minutes'],
+                    'eta_formatted': self.arrival_predictor.format_arrival_time(prediction['eta_minutes']),
+                    'confidence': prediction['confidence'],
+                    'status': prediction['status'],
+                    'speed_kmh': prediction['speed_kmh'],
+                    'distance_km': prediction['distance_km'],
+                    'current_position': {
+                        'lat': bus['lat'],
+                        'lon': bus['lon']
+                    }
+                })
+        
+        # Sort by ETA
+        arrivals.sort(key=lambda x: x['eta_minutes'])
+        
+        return arrivals[:limit]
     
     def _create_no_route_response(self, start_lat, start_lon, end_lat, end_lon, distance):
         """Create response when no direct routes are found"""
