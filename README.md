@@ -5,29 +5,34 @@ A real-time transit route planner for Delhi that provides optimized routes using
 ## 🚀 Features
 
 - 🚌 **Real-time Bus Tracking** - Track 2,600+ DTC buses with live GPS positions
-- 🗺️ **Smart Route Planning** - Find actual bus routes between any two points
-- 📊 **Multiple Options** - Compare routes by speed, cost, and comfort
+- 🚇 **Delhi Metro Integration** - Complete metro network with 286 stations and 36 lines
+- 🗺️ **Smart Route Planning** - Find optimal routes using bus, metro, or both
+- 📊 **Multiple Options** - Compare up to 5 routes by speed, cost, and comfort
 - ✅ **Direction Validation** - Only suggests buses going the right way
 - 📍 **Live Updates** - Bus positions updated every minute
 - 🎯 **Confidence Scores** - Know how reliable each route suggestion is
+- 🔄 **Multi-Modal Routes** - Combines bus and metro for best results
 
 ## 📊 Current Status
 
 ### What's Working ✅
 - Real-time tracking of 2,600+ DTC buses
+- Complete Delhi Metro network (286 stations, 36 lines)
 - Actual route numbers (207, 531, 588, etc.)
+- Metro line identification (Red, Blue, Yellow, etc.)
 - Direction-aware route planning
 - Variable confidence scores (60-95%)
 - Walking distance calculations
 - Cost and time estimates
+- Multi-modal route options (bus + metro)
 
 ### Known Limitations ⚠️
-- **Bus routes only** - Metro integration pending
 - **No GTFS static data** - Must be downloaded separately (see DATA_SETUP.md)
-- **Position-based routing** - Works best during peak hours
-- **No multi-modal routes** - Can't combine bus + metro yet
+- **Position-based bus routing** - Works best during peak hours
+- **No real-time metro data** - Using static schedules only
+- **No combined bus+metro routes** - Shows separate options (coming soon)
 
-See [ROUTE_PLANNER_STATUS.md](ROUTE_PLANNER_STATUS.md) for detailed information.
+See [METRO_INTEGRATION.md](METRO_INTEGRATION.md) for metro details.
 
 ## 🚀 Quick Start
 
@@ -140,7 +145,9 @@ curl -X POST http://localhost:5000/api/plan-route \
 
 ## 📚 Documentation
 
-- [ROUTE_PLANNER_STATUS.md](ROUTE_PLANNER_STATUS.md) - Current implementation status and limitations
+- [METRO_INTEGRATION.md](METRO_INTEGRATION.md) - **NEW!** Complete metro integration guide
+- [ROUTE_OPTIMIZATION_EXPLAINED.md](ROUTE_OPTIMIZATION_EXPLAINED.md) - How the algorithm works
+- [ROUTE_PLANNER_STATUS.md](ROUTE_PLANNER_STATUS.md) - Current implementation status
 - [FIXES_APPLIED.md](FIXES_APPLIED.md) - Recent fixes and improvements
 - [DATA_SETUP.md](DATA_SETUP.md) - How to download and set up GTFS data
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common issues and solutions

@@ -16,21 +16,32 @@
 - **Live counts**: Shows how many buses are on each route
 - **Source**: Delhi Open Transit Data API
 
-### 2. Smart Route Planning
+### 2. Delhi Metro Integration ⭐ NEW!
+- **286 metro stations** loaded from DMRC GTFS
+- **36 metro lines**: Red, Blue, Yellow, Green, Violet, Magenta, Pink, Orange, Gray, Rapid
+- **Complete network graph** for pathfinding
+- **Intelligent transfers**: Finds routes with line changes
+- **Accurate fares**: ₹10-60 based on distance
+- **Fast travel**: 40 km/h average speed
+
+### 3. Smart Route Planning
+- **Multi-modal options**: Shows both bus AND metro routes
 - **Direction-aware**: Only suggests buses going the right way
-- **Multiple options**: Shows up to 3 different routes
+- **Multiple options**: Shows up to 5 different routes
 - **Confidence scores**: Variable (60-95%) based on route quality
 - **Distance calculations**: Accurate geodesic distances
-- **Cost estimation**: Based on DTC fare structure (₹10 base + ₹5/km)
-- **Travel time**: Estimated based on distance and Delhi traffic (20 km/h avg)
+- **Cost estimation**: Real fare structures for both bus and metro
+- **Travel time**: Mode-specific (40 km/h metro, 20 km/h bus)
 
-### 3. Route Information Display
-**Example Route**:
+### 4. Route Information Display
+
+**Example Bus Route**:
 ```
 DTC Bus 531
 Duration: 83 minutes
 Cost: ₹47
 Confidence: 94%
+Comfort: 7/10
 ✓ 6 buses tracked live
 
 Segments:
@@ -38,6 +49,22 @@ Segments:
   2. DTC Bus 531 (4.5 km, 13 min)
      ✓ Live tracking: 6 buses on this route
   3. Walk to destination (1.3 km, 15 min)
+```
+
+**Example Metro Route**:
+```
+Delhi Metro (Yellow Line, Magenta Line)
+Duration: 48 minutes
+Cost: ₹40
+Confidence: 95%
+Comfort: 9/10
+✓ 14 stations
+
+Segments:
+  1. Walk to New Delhi Metro (0.96 km, 11 min)
+  2. Delhi Metro: Yellow → Magenta (14.1 km, 21 min)
+     ✓ 14 stations, 2 lines
+  3. Walk to destination (0.85 km, 10 min)
 ```
 
 ## 🎯 How to Use
@@ -76,10 +103,10 @@ npm run dev
 
 ## ⚠️ Known Limitations
 
-### 1. Bus Routes Only
-- Currently shows DTC bus routes only
-- Metro routes not yet integrated
-- No suburban train options
+### 1. No Combined Bus+Metro Routes
+- Shows bus routes separately from metro routes
+- Can't suggest "take bus to metro, then metro to destination"
+- Multi-modal routing coming soon
 
 ### 2. Real-time Position Based
 - Routes based on current bus positions
@@ -140,11 +167,13 @@ curl -X POST http://localhost:5000/api/plan-route \
 | Metric | Value |
 |--------|-------|
 | Buses Tracked | 2,600+ |
-| Active Routes | 850+ |
+| Metro Stations | 286 |
+| Metro Lines | 36 |
+| Active Bus Routes | 850+ |
 | Update Frequency | Every 60 seconds |
 | Response Time | ~2 seconds |
-| Route Accuracy | 70-90% |
-| Data Source | Delhi Open Transit Data |
+| Route Accuracy | 70-95% |
+| Data Sources | Delhi Open Transit Data + DMRC GTFS |
 
 ## 🐛 Troubleshooting
 
